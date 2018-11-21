@@ -5,7 +5,7 @@ const $ = require('cheerio');
 
 // let $ = cheerio.load(
 
-let url = 'https://www.oslobors.no/markedsaktivitet/#/list/shares/quotelist/ob/all/all/false';
+let url = 'https://www.oslobors.no/markedsaktivitet/#/list/shares/quotelist/ose/all/all/false';
 
 
 const scrapeIt = require("scrape-it")
