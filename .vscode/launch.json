@@ -8,7 +8,7 @@
         "type": "node",
         "request": "launch",
         "name": "Launch Program",
-        "program": "${workspaceFolder}/cron.js"
+        "program": "${workspaceFolder}/backtest.js"
     },
     ]
 }

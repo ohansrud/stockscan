@@ -23,6 +23,7 @@ const api_key = 'FVEQMUDKFGIXTK0D'
 //   "STB.OL", "STORM.OL", "SUBC.OL", "TIL.OL", "TEL.OL", "TELIO.OL", "TGS.OL", "SSC.OL", "THIN.OL", "TOM.OL", "TTS.OL", "VARDIA.OL", "VEI.OL", "VIZ.OL", "WEIFA.OL", "WRL.OL",
 //   "WBULK.OL", "WWASA.OL", "WWI.OL", "WWIB.OL", "XXL.OL", "YAR.OL", "ZAL.OL", "ZONC.OL"];
 let tickers = fs.readFileSync('tickers.txt').toString().replace(/\r/g, "").split("\n");
+// let positions = fs.readFileSync('positions.txt').toString().replace(/\r/g, "").split("\n");
 
 // let tickers = ['TEL.OL', 'ATEA.OL']
 function run() {
@@ -79,8 +80,60 @@ function runRSI() {
   tickers.forEach(ticker => {
     ticker = ticker.replace(/\s/g, '');
     let result_column = 'Technical Analysis: RSI';
-    let url = 'https://www.alphavantage.co/query?function=RSI&symbol=' + ticker + '&interval=daily&time_period=14&series_type=close&apikey=' + api_key;
+    let url = 'https://www.alphavantage.co/query?function=RSI&symbol=' + ticker + '&interval=daily&time_period=2&series_type=close&apikey=' + api_key;
     
+    console.log(url);
+    request(url, function (error, response, body) {
+      console.log(url);
+
+      if (!error && response.statusCode == 200) {
+        let data = JSON.parse(body)
+        let d = data[result_column];
+
+        if (!d) {
+          console.log(ticker + ' Error');
+          console.log(body);
+        } else {
+          let rsi_today = d[Object.keys(d)[0]].RSI;
+          let rsi_yesterday = d[Object.keys(d)[1]].RSI;
+          // writeToFile(ticker);
+          console.log(ticker + ' OK');
+          console.log(rsi_today);
+          console.log(rsi_yesterday);
+
+
+          // if (rsi_yesterday < 90 && rsi_today > 90) {
+          //   // console.log(ticker = ': MACD Crossed over 0 today!');
+          //   writeToFile(ticker + ': RSI Crossed over 60 today!')
+          // } else 
+          if (rsi_yesterday > 5 && rsi_today < 5) {
+            // console.log(ticker + ': MACD Crossed under 0 today!');
+            writeToFile(ticker + ': RSI Crossed under 5 today!')
+          } else {
+            // writeToFile(ticker + ': No results!')
+          }
+        }
+      } else {
+        console.log(ticker + ' Error');
+      }
+    });
+
+    //Wait for 25 seconds
+    sleep(25000);
+
+  })
+
+}
+
+function runRSIandSMA200() {
+
+  console.log('Starting...');
+
+  tickers.forEach(ticker => {
+    ticker = ticker.replace(/\s/g, '');
+    let result_column = 'Technical Analysis: SMA';
+    let url = 'https://www.alphavantage.co/query?function=SMA&symbol=' + ticker + '&interval=daily&time_period=200&series_type=close&apikey=' + api_key;
+ 
     console.log(url);
     request(url, function (error, response, body) {
       console.log(url);
@@ -122,6 +175,7 @@ function runRSI() {
   })
 
 }
+
 
 function writeToFile(input) {
   fs.appendFile("tmp/result", input + '\n', function (err) {
